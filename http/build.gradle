@@ -1,0 +1,7 @@
+def httpClientVersion = '4.5.12'
+def fastJsonVersion = '1.2.73'
+
+dependencies {
+    implementation("org.apache.httpcomponents:httpclient:${httpClientVersion}")
+    implementation("com.alibaba:fastjson:${fastJsonVersion}")
+}

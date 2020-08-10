@@ -1,0 +1,86 @@
+// 这是根目录build.gradle 分三部分，分别是buildscript，allprojects，subprojects
+
+buildscript {
+    repositories {
+        repositories {
+            maven {
+                url 'http://maven.aliyun.com/nexus/content/groups/public'
+            }
+        }
+    }
+}
+
+allprojects {
+    apply plugin: 'java'
+    apply plugin: 'maven-publish'
+    sourceCompatibility = '1.8'
+    group 'org.donny.base'
+    version '1.0.0-SNAPSHOT'
+    /* java编译的时候缺省状态下会因为中文字符而失败 */
+    [compileJava, compileTestJava, javadoc]*.options*.encoding = 'UTF-8'
+}
+
+
+/* 所有子项目的通用配置 */
+subprojects {
+    repositories {
+        maven { url "http://maven.aliyun.com/nexus/content/groups/public" }
+    }
+
+    /* 添加通用依赖 */
+    dependencies {
+//        implementation()
+//        implementation()
+        testCompile group: 'junit', name: 'junit', version: '4.12'
+    }
+
+    // 源码包
+    task sourceJar(type: Jar) {
+        from sourceSets.main.allJava
+        archiveClassifier = "sources"
+    }
+//maven-publish 扩展名
+    publishing {
+        // 配置发布的项目信息
+        publications {
+            library(MavenPublication) {
+                // MavenPublication 中有一些属性，主要包括groupId，artifactId，version,from,artifact
+                // 其中groupId，artifactId，version，artifact都是选填的，不填默认去取项目的相关信息；
+                //如果打成war包填写components.web，如果打成jar包填写components.java
+                from components.java
+                artifact sourceJar
+                pom {
+                    licenses {
+                        license {
+                            name = "The Apache License, Version 2.0"
+                            url = "http://www.apache.org/licenses/LICENSE-2.0.txt"
+                        }
+                    }
+                    developers {
+                        developer {
+                            id = "Donny"
+                            name = "Donny Gu"
+                            email = "1792998761@qq.com"
+                        }
+                    }
+                }
+            }
+        }
+        // 配置发布的地址
+        repositories {
+//        maven{
+//            // 私服地址
+//            url = 'https://xxxx'
+//            // 验证信息
+//            credentials{
+//                // 私服的用户与密码
+//                username 'root'
+//                password '123456'
+//            }
+//        }
+            maven {
+                mavenLocal()
+            }
+        }
+    }
+}
